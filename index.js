@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
 require('dotenv').config();
 const app = express();
@@ -26,6 +26,18 @@ async function run() {
 
     const jobCollection = client.db('jobEcommerce').collection('jobs');
 
+    app.get('/jobs', async (req, res) => {
+      const result = await jobCollection.find().toArray();
+      res.send(result);
+    })
+    app.get('/jobs/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = {
+        _id: new ObjectId(id)
+      };
+      const result = await jobCollection.findOne(query);
+      res.send(result);
+    })
     app.post('/jobs', async (req, res) => {
       const job = req.body;
       console.log(job);
@@ -49,7 +61,7 @@ app.use(express.json());
 
 
 app.get('/', (req, res)=>{
-   res.send('crud operation server side is running');
+   res.send('crud operation KH Job server side is running');
 })
 
 app.listen(port,() => {
