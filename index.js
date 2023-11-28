@@ -41,9 +41,26 @@ async function run() {
     app.post('/jobs', async (req, res) => {
       const job = req.body;
       console.log(job);
-      const result = await jobCollection.findOne(job);
+      const result = await jobCollection.insertOne(job);
       console.log(result);
       res.send(result);
+    })
+    app.put('/jobs/:id', async (req, res) => {
+      const id = req.params.id;
+      const data = req.body;
+      console.log('id', id, data);
+      const filter = {_id: new ObjectId(id)};
+      const updateJob = {
+        $set: {
+          categorya: data.category,
+          job_title: data.job_title,
+          deadline: data.deadline,
+          job_description: data.job_description,
+          minimum_price: data.minimum_price,
+          maximum_price: data.maximum_price,
+        }
+      }
+      
     })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
