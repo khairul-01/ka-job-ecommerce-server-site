@@ -48,19 +48,29 @@ async function run() {
     app.put('/jobs/:id', async (req, res) => {
       const id = req.params.id;
       const data = req.body;
-      console.log('id', id, data);
+      console.log('id', id);
+      console.log(data.job_title);
       const filter = {_id: new ObjectId(id)};
+      console.log(filter)
       const updateJob = {
         $set: {
-          categorya: data.category,
           job_title: data.job_title,
           deadline: data.deadline,
           job_description: data.job_description,
+          category: data.category,
           minimum_price: data.minimum_price,
           maximum_price: data.maximum_price,
         }
       }
-      
+      const result = await jobCollection.updateOne(filter, updateJob);
+      res.send(result);
+    })
+    app.delete('/jobs/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log('Deleted id', id);
+      const query = {_id: new ObjectId(id)};
+      const result = await jobCollection.deleteOne(query);
+      res.send(result);
     })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
