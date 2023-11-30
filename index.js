@@ -25,7 +25,9 @@ async function run() {
     await client.connect();
 
     const jobCollection = client.db('jobEcommerce').collection('jobs');
+    const bidJobCollection = client.db('jobEcommerce').collection('bidJobs');
 
+    // Jobs information
     app.get('/jobs', async (req, res) => {
       const result = await jobCollection.find().toArray();
       res.send(result);
@@ -72,6 +74,19 @@ async function run() {
       const result = await jobCollection.deleteOne(query);
       res.send(result);
     })
+
+    // bidde jobs information
+    app.get('/bidJobs', async (req, res) => {
+      const result = await bidJobCollection.find().toArray();
+      res.send(result);
+    })
+    app.post('/bidJobs', async (req, res) => {
+      const bidJob = req.body;
+      console.log(bidJob);
+      const result = await bidJobCollection.insertOne(bidJob);
+      res.send(result);
+    })
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
