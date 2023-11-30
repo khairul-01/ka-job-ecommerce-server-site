@@ -80,10 +80,30 @@ async function run() {
       const result = await bidJobCollection.find().toArray();
       res.send(result);
     })
+    app.get('/bidJobs/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await bidJobCollection.findOne(query);
+      res.send(result);
+    })
     app.post('/bidJobs', async (req, res) => {
       const bidJob = req.body;
       console.log(bidJob);
       const result = await bidJobCollection.insertOne(bidJob);
+      res.send(result);
+    })
+    app.put('/bidJobs/:id', async (req, res) => {
+      const statusInfo = req.body;
+      console.log(statusInfo);
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const updateStatus = {
+        $set: {
+          status: statusInfo.status,
+        }
+      }
+      const options = {upsert:true};
+      const result = await bidJobCollection.updateOne(filter, updateStatus, options);
       res.send(result);
     })
 
