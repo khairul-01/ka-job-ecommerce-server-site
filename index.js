@@ -52,7 +52,7 @@ async function run() {
       const data = req.body;
       console.log('id', id);
       console.log(data.job_title);
-      const filter = {_id: new ObjectId(id)};
+      const filter = { _id: new ObjectId(id) };
       console.log(filter)
       const updateJob = {
         $set: {
@@ -70,7 +70,7 @@ async function run() {
     app.delete('/jobs/:id', async (req, res) => {
       const id = req.params.id;
       console.log('Deleted id', id);
-      const query = {_id: new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await jobCollection.deleteOne(query);
       res.send(result);
     })
@@ -82,7 +82,7 @@ async function run() {
     })
     app.get('/bidJobs/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await bidJobCollection.findOne(query);
       res.send(result);
     })
@@ -96,15 +96,29 @@ async function run() {
       const statusInfo = req.body;
       console.log(statusInfo);
       const id = req.params.id;
-      const filter = {_id: new ObjectId(id)};
-      const updateStatus = {
-        $set: {
-          status: statusInfo.status,
+      const filter = { _id: new ObjectId(id) };
+      if (statusInfo?.complete === 'complete') {
+        const updateStatus = {
+          $set: {
+            complete: statusInfo?.complete,
+          }
         }
+        const options = { upsert: true };
+        const result = await bidJobCollection.updateOne(filter, updateStatus, options);
+        res.send(result);
       }
-      const options = {upsert:true};
-      const result = await bidJobCollection.updateOne(filter, updateStatus, options);
-      res.send(result);
+      else {
+        const updateStatus = {
+          $set: {
+            status: statusInfo?.status,
+          }
+        }
+        const options = { upsert: true };
+        const result = await bidJobCollection.updateOne(filter, updateStatus, options);
+        res.send(result);
+      }
+
+
     })
 
     // Send a ping to confirm a successful connection
@@ -112,7 +126,7 @@ async function run() {
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-   //  await client.close();
+    //  await client.close();
   }
 }
 run().catch(console.dir);
@@ -122,10 +136,10 @@ app.use(cors());
 app.use(express.json());
 
 
-app.get('/', (req, res)=>{
-   res.send('crud operation KH Job server side is running');
+app.get('/', (req, res) => {
+  res.send('crud operation KH Job server side is running');
 })
 
-app.listen(port,() => {
-   console.log(`Assignment eleven is running on port ${port}`);
+app.listen(port, () => {
+  console.log(`Assignment eleven is running on port ${port}`);
 })
