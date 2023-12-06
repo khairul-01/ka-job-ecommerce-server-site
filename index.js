@@ -1,6 +1,8 @@
 const express = require('express');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const app = express();
 
@@ -26,6 +28,12 @@ async function run() {
 
     const jobCollection = client.db('jobEcommerce').collection('jobs');
     const bidJobCollection = client.db('jobEcommerce').collection('bidJobs');
+
+    // App related API
+    app.post('/jwt', async(req, res) =>{
+      const user = req.body();
+      console.log('user for token', user);
+    })
 
     // Jobs information
     app.get('/jobs', async (req, res) => {
@@ -75,9 +83,10 @@ async function run() {
       res.send(result);
     })
 
-    // bidde jobs information
+    // bids jobs information
     app.get('/bidJobs', async (req, res) => {
-      const result = await bidJobCollection.find().toArray();
+
+      const result = await bidJobCollection.find().sort({ status: 1 }).toArray();
       res.send(result);
     })
     app.get('/bidJobs/:id', async (req, res) => {
@@ -134,6 +143,7 @@ run().catch(console.dir);
 // middlewar
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 
 app.get('/', (req, res) => {
